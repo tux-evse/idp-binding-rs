@@ -140,6 +140,7 @@ impl ManagerHandle {
                     "auth-login-fail",
                     "invalid nfc tagid authentication refused"
                 );
+                self.event.push(AuthMsg::Fail);
             }
             Ok(nfc_data) => {
                 data_set.tagid = nfc_data;
