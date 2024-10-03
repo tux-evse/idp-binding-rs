@@ -133,6 +133,7 @@ impl ManagerHandle {
 
         match check_tagid() {
             Err(error) => {
+                self.event.push(AuthMsg::Fail);
                 afb_log_msg!(Notice, self.event, "{}", error);
                 data_set.tagid = String::new();
                 data_set.auth = AuthMsg::Fail;
