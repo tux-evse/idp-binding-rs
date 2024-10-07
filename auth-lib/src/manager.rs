@@ -111,9 +111,7 @@ impl ManagerHandle {
                 self.event.push(data_set.auth);
                 return Ok(data_set.clone())
             }
-            _ => {
-                self.event.push(AuthMsg::Fail);
-            }
+            _ => {}
         }
 
         self.event.push(AuthMsg::Pending);
