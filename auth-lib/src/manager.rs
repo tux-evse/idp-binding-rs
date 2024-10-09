@@ -61,6 +61,7 @@ impl ManagerHandle {
         let mut data_set = self.get_state()?;
         match data_set.auth {
             AuthMsg::Done => {} // session is active let's logout
+            AuthMsg::Fail => {} // session is active let's logout
             _ => {
                 return afb_error!(
                     "auth-logout-fail",
