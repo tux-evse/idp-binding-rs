@@ -154,7 +154,7 @@ impl ManagerHandle {
         match check_contract() {
             Err(error) => {
                 self.event.push(AuthMsg::Fail);
-                afb_log_msg!(Notice, self.event, "{}", error);
+                afb_log_msg!(Debug, self.event, "{}", error);
                 data_set.tagid = String::new();
                 data_set.auth = AuthMsg::Fail;
                 return afb_error!("auth-login-fail", "invalid subscription contract");
@@ -168,13 +168,15 @@ impl ManagerHandle {
 
         // nfc is ok let check occp tag_id
         if data_set.ocpp_check {
+
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.ocpp_api,
                 "authorize",
                 data_set.tagid.clone(),
+                
             )?;
-
+            afb_log_msg!(Notice,None,"Authentification Done{}",data_set.tagid.clone());
             // ocpp auth is ok let start ocpp transaction
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
@@ -182,7 +184,7 @@ impl ManagerHandle {
                 "transaction",
                 OcppTransaction::Start(data_set.tagid.clone()),
             )?;
-
+            afb_log_msg!(Notice,None,"Authentification Done{}",data_set.tagid.clone());
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.engy_api,
@@ -190,6 +192,7 @@ impl ManagerHandle {
                 EnergyAction::SUBSCRIBE,
             )?;
         }
+        afb_log_msg!(Notice,None,"Authentification Done");
         data_set.auth = AuthMsg::Done;
         self.event.push(data_set.auth);
         Ok(data_set.clone())
