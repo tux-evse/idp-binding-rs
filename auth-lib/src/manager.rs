@@ -174,9 +174,8 @@ impl ManagerHandle {
                 self.ocpp_api,
                 "authorize",
                 data_set.tagid.clone(),
-                
             )?;
-            afb_log_msg!(Notice,None,"NFC OCCP check status {}",data_set.tagid);
+            //afb_log_msg!(Notice,None,"NFC OCCP check status {}",data_set.tagid);
             // ocpp auth is ok let start ocpp transaction
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
@@ -184,7 +183,7 @@ impl ManagerHandle {
                 "transaction",
                 OcppTransaction::Start(data_set.tagid.clone()),
             )?;
-            afb_log_msg!(Notice,None,"NFC OCCP transaction status {}",data_set.tagid);
+            //afb_log_msg!(Notice,None,"NFC OCCP transaction status {}",data_set.tagid);
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.engy_api,
