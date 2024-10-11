@@ -168,6 +168,7 @@ impl ManagerHandle {
 
         // nfc is ok let check occp tag_id
         if data_set.ocpp_check {
+            afb_log_msg!(Notice,None,"NFC OCCP transaction status {}",data_set.ocpp_check;
 
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
