@@ -112,6 +112,7 @@ impl ManagerHandle {
                 self.event.push(data_set.auth);
                 return Ok(data_set.clone())
             }
+            AuthMsg::Fail => {}
             _ => {}
         }
 
@@ -134,6 +135,7 @@ impl ManagerHandle {
 
         match check_tagid() {
             Err(error) => {
+                afb_log_msg!(Notice,None,"CHECK_TAG_ID_ERROR");
                 self.event.push(AuthMsg::Fail);
                 afb_log_msg!(Notice, self.event, "{}", error);
                 data_set.tagid = String::new();
@@ -144,6 +146,7 @@ impl ManagerHandle {
                 );
             }
             Ok(nfc_data) => {
+                afb_log_msg!(Notice,None,"CHECK_TAG_ID_OK");
                 data_set.tagid = nfc_data;
                 data_set.imax = 32;
                 data_set.pmax = 22;
@@ -153,8 +156,9 @@ impl ManagerHandle {
 
         match check_contract() {
             Err(error) => {
+                afb_log_msg!(Notice,None,"CHECK_CONTRACT_ERROR");
                 self.event.push(AuthMsg::Fail);
-                afb_log_msg!(Debug, self.event, "{}", error);
+                afb_log_msg!(Notice, self.event, "{}", error);
                 data_set.tagid = String::new();
                 data_set.auth = AuthMsg::Fail;
                 return afb_error!("auth-login-fail", "invalid subscription contract");
@@ -163,32 +167,36 @@ impl ManagerHandle {
                 data_set.imax = jsonc.default::<u32>("imax", 32)?;
                 data_set.pmax = jsonc.default::<u32>("pmax", 22)?;
                 data_set.ocpp_check = jsonc.default::<bool>("ocpp", true)?;
+                afb_log_msg!(Notice,None,"CHECK_CONTRACT_OK");
             }
         }
 
         // nfc is ok let check occp tag_id
         if data_set.ocpp_check {
-
+            afb_log_msg!(Notice,None,"CHECK_OCPP 1 -------");
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.ocpp_api,
                 "authorize",
                 data_set.tagid.clone(),
             )?;
+
             // ocpp auth is ok let start ocpp transaction
+            afb_log_msg!(Notice,None,"CHECK_OCPP 2 -------");
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.ocpp_api,
                 "transaction",
                 OcppTransaction::Start(data_set.tagid.clone()),
             )?;
-
+            afb_log_msg!(Notice,None,"CHECK_OCPP 3 -------");
             AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.engy_api,
                 "state",
                 EnergyAction::SUBSCRIBE,
             )?;
+            afb_log_msg!(Notice,None,"CHECK_OCPP 4 -------");
         }
         afb_log_msg!(Notice,None,"Authentification Done");
         data_set.auth = AuthMsg::Done;
