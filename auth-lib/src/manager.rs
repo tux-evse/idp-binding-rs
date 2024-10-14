@@ -197,11 +197,11 @@ impl ManagerHandle {
                 EnergyAction::SUBSCRIBE,
             )?;
             afb_log_msg!(Notice,None,"CHECK_OCPP 4 -------");
-        }else {
-            afb_log_msg!(Notice,None,"Authentification ocpp Fail");
+        }/*else {
+            afb_log_msg!(Notice,None,"Authentification Fail");
             data_set.auth = AuthMsg::Fail;
             self.event.push(data_set.auth);
-        }
+        }*/
         afb_log_msg!(Notice,None,"Authentification Done");
         data_set.auth = AuthMsg::Done;
         self.event.push(data_set.auth);
