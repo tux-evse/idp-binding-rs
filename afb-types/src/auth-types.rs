@@ -32,6 +32,7 @@ pub struct AuthState {
     pub imax:u32,
     pub pmax: u32,
     pub ocpp_check: bool,
+    pub ocpp_auth: bool,
 }
 
 impl AuthState {
@@ -42,6 +43,7 @@ impl AuthState {
             pmax: 0,
             tagid: String::new(),
             ocpp_check: true,
+            ocpp_auth: true, // to check if the ocpp can respond false
         }
     }
 }

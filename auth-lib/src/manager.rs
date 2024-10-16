@@ -174,12 +174,23 @@ impl ManagerHandle {
         // nfc is ok let check occp tag_id
         if data_set.ocpp_check {
             afb_log_msg!(Notice,None,"CHECK_OCPP 1 -------");
-            AfbSubCall::call_sync(
+            let response = AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.ocpp_api,
                 "authorize",
                 data_set.tagid.clone(),
             )?;
+
+            //////////////// DAS
+            let testo = response.get::<&OcppState>(0)?;
+            data_set.ocpp_auth = testo.authorized;
+
+            if data_set.ocpp_auth {
+                afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::::::::::::::::");
+            }
+            else {
+                afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION FAILED::::::::::::::::::::::::::::::::");
+            }
 
             // ocpp auth is ok let start ocpp transaction
             afb_log_msg!(Notice,None,"CHECK_OCPP 2 -------");
