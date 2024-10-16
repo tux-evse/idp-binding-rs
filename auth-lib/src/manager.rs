@@ -182,19 +182,25 @@ impl ManagerHandle {
             )?;
 
             //////////////// DAS
-            let testo = response.get::<&OcppState>(0)?;
-            data_set.ocpp_auth = testo.authorized;
+            match response.get::<&OcppState>(0) {
+                Ok(ocpp_response) => {
+                    data_set.ocpp_auth = ocpp_response.authorized;
 
-            if data_set.ocpp_auth {
-                afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::::::::::::::::");
-            }
-            else if data_set.ocpp_auth == false {
-                afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION FAILED::::::::::::::::::::::::::::::::");
-            }
-            else {
-                
-                afb_log_msg!(Notice,None,"::::::::::::::::::::OCPP AUTHSTATE::::::::::::::{}", data_set.ocpp_auth);
-            }
+                    if data_set.ocpp_auth {
+                        afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::: RESPONSE: {}", data_set.ocpp_auth);
+                    }
+                    else if data_set.ocpp_auth == false {
+                        afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION FAILED:::::::::::::::::::::RESPONSE: {}", data_set.ocpp_auth);
+                    }
+                    else {
+                        
+                        afb_log_msg!(Notice,None,"::::::::::::::::::::OCPP AUTHSTATE::::::::::::::{}", data_set.ocpp_auth);
+                    }
+                },
+                _ => {
+                    afb_log_msg!(Notice, None, "::::::::::::Unable to retrieve OCPP authorization.:::::::::::");
+                }
+            };
 
             // ocpp auth is ok let start ocpp transaction
             afb_log_msg!(Notice,None,"CHECK_OCPP 2 -------");
