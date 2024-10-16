@@ -188,8 +188,12 @@ impl ManagerHandle {
             if data_set.ocpp_auth {
                 afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::::::::::::::::");
             }
-            else {
+            else if data_set.ocpp_auth == false {
                 afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION FAILED::::::::::::::::::::::::::::::::");
+            }
+            else {
+                
+                afb_log_msg!(Notice,None,"::::::::::::::::::::OCPP AUTHSTATE::::::::::::::{}", data_set.ocpp_auth);
             }
 
             // ocpp auth is ok let start ocpp transaction
