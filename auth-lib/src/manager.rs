@@ -221,6 +221,6 @@ impl ManagerHandle {
         // afb_log_msg!(Notice,None,"Authentification Done");
         // data_set.auth = AuthMsg::Done;
         // self.event.push(data_set.auth);
-        // Ok(data_set.clone())
+        Ok(data_set.clone())
     }
 }
