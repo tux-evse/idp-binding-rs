@@ -180,12 +180,11 @@ impl ManagerHandle {
                 "authorize",
                 data_set.tagid.clone(),
             )?;
-
+            
             //////////////// DAS
             match response.get::<&OcppState>(0) {
                 Ok(ocpp_response) => {
                     data_set.ocpp_auth = ocpp_response.authorized;
-
                     if data_set.ocpp_auth {
                         afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::: RESPONSE: {}", data_set.ocpp_auth);
                     }
@@ -219,9 +218,9 @@ impl ManagerHandle {
             )?;
             afb_log_msg!(Notice,None,"CHECK_OCPP 4 -------");
         }
-        afb_log_msg!(Notice,None,"Authentification Done");
-        data_set.auth = AuthMsg::Done;
-        self.event.push(data_set.auth);
-        Ok(data_set.clone())
+        // afb_log_msg!(Notice,None,"Authentification Done");
+        // data_set.auth = AuthMsg::Done;
+        // self.event.push(data_set.auth);
+        // Ok(data_set.clone())
     }
 }
