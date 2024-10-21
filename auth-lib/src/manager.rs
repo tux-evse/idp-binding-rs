@@ -174,32 +174,37 @@ impl ManagerHandle {
         // nfc is ok let check occp tag_id
         if data_set.ocpp_check {
             afb_log_msg!(Notice,None,"CHECK_OCPP 1 -------");
-            let response = AfbSubCall::call_sync(
+            // let response = AfbSubCall::call_sync(
+            //     self.event.get_apiv4(),
+            //     self.ocpp_api,
+            //     "authorize",
+            //     data_set.tagid.clone(),
+            // )?;
+
+            match AfbSubCall::call_sync(
                 self.event.get_apiv4(),
                 self.ocpp_api,
                 "authorize",
                 data_set.tagid.clone(),
-            )?;
-            
-            //////////////// DAS
-            match response.get::<&OcppState>(0) {
-                Ok(ocpp_response) => {
-                    data_set.ocpp_auth = ocpp_response.authorized;
-                    if data_set.ocpp_auth {
-                        afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION SUCCESS::::::::::::::::::: RESPONSE: {}", data_set.ocpp_auth);
-                    }
-                    else if data_set.ocpp_auth == false {
-                        afb_log_msg!(Notice,None,"::::::::::::::::::::::::::::::::OCPP AUTHORIZATION FAILED:::::::::::::::::::::RESPONSE: {}", data_set.ocpp_auth);
+            ) {
+                Ok(response) => {
+                    let ocpp_state = response.get::<&OcppState>(0)?;
+                    afb_log_msg!(Notice,None,":::::::::::OCPP STATE: {} :::::::::::", ocpp_state.authorized);
+                    if ocpp_state.authorized {
+                        data_set.auth = AuthMsg::Done;
                     }
                     else {
-                        
-                        afb_log_msg!(Notice,None,"::::::::::::::::::::OCPP AUTHSTATE::::::::::::::{}", data_set.ocpp_auth);
+                        data_set.auth = AuthMsg::Fail;
                     }
-                },
-                _ => {
-                    afb_log_msg!(Notice, None, "::::::::::::Unable to retrieve OCPP authorization.:::::::::::");
+
+                    self.event.push(data_set.auth);
                 }
-            };
+                Err(_) => {
+                    data_set.auth = AuthMsg::Fail;
+                    self.event.push(data_set.auth);
+                    return afb_error!("ocpp-login-fail", "::::::::OCPP fails to authorize::::::::");
+                }
+            }
 
             // ocpp auth is ok let start ocpp transaction
             afb_log_msg!(Notice,None,"CHECK_OCPP 2 -------");
