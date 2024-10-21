@@ -188,9 +188,13 @@ impl ManagerHandle {
                 data_set.tagid.clone(),
             ) {
                 Ok(response) => {
-                    let ocpp_state = response.get::<&OcppState>(0)?;
-                    afb_log_msg!(Notice,None,":::::::::::OCPP STATE: {} :::::::::::", ocpp_state.authorized);
-                    if ocpp_state.authorized {
+
+                    // afb_log_msg!(Notice, None, ":::::Response status: {}:::::", response.get_status());
+                    // afb_log_msg!(Notice, None, ":::::Response count: {}:::::", response.get_count());
+                    // let ocpp_msg = response.get::<&OcppMsg>(0)?;
+                    let ocpp_state = response.get::<bool>(0)?;
+                    afb_log_msg!(Notice,None,":::::::::::OCPP STATE: {} :::::::::::", ocpp_state);
+                    if ocpp_state {
                         data_set.auth = AuthMsg::Done;
                     }
                     else {
