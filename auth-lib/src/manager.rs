@@ -172,14 +172,8 @@ impl ManagerHandle {
         }
 
         // nfc is ok let check occp tag_id
-        if data_set.ocpp_check {
+        if data_set.ocpp_check { // Badge with ocpp check
             afb_log_msg!(Notice,None,"CHECK_OCPP 1 -------");
-            // let response = AfbSubCall::call_sync(
-            //     self.event.get_apiv4(),
-            //     self.ocpp_api,
-            //     "authorize",
-            //     data_set.tagid.clone(),
-            // )?;
 
             match AfbSubCall::call_sync(
                 self.event.get_apiv4(),
@@ -189,16 +183,15 @@ impl ManagerHandle {
             ) {
                 Ok(response) => {
 
-                    // afb_log_msg!(Notice, None, ":::::Response status: {}:::::", response.get_status());
-                    // afb_log_msg!(Notice, None, ":::::Response count: {}:::::", response.get_count());
-                    // let ocpp_msg = response.get::<&OcppMsg>(0)?;
                     let ocpp_state = response.get::<bool>(0)?;
-                    afb_log_msg!(Notice,None,":::::::::::OCPP STATE: {} :::::::::::", ocpp_state);
+                    afb_log_msg!(Notice,None,":::::::::::OCPP AUTH STATE: {} :::::::::::", ocpp_state);
                     if ocpp_state {
-                        data_set.auth = AuthMsg::Done;
+                        data_set.auth = AuthMsg::Done; 
+                        afb_log_msg!(Notice, None, "Authentification Done");
                     }
                     else {
                         data_set.auth = AuthMsg::Fail;
+                        afb_log_msg!(Notice, None, "Authentification Fail");
                     }
 
                     self.event.push(data_set.auth);
@@ -227,9 +220,12 @@ impl ManagerHandle {
             )?;
             afb_log_msg!(Notice,None,"CHECK_OCPP 4 -------");
         }
-        // afb_log_msg!(Notice,None,"Authentification Done");
+        else { // Badge without ocpp check
+            data_set.auth = AuthMsg::Done;
+            afb_log_msg!(Notice, None, "Authentification Done"); 
+        }
+        
         // data_set.auth = AuthMsg::Done;
-        // self.event.push(data_set.auth);
         Ok(data_set.clone())
     }
 }
