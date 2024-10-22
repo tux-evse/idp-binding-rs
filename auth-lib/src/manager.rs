@@ -193,8 +193,6 @@ impl ManagerHandle {
                         data_set.auth = AuthMsg::Fail;
                         afb_log_msg!(Notice, None, "Authentification Fail");
                     }
-
-                    self.event.push(data_set.auth);
                 }
                 Err(_) => {
                     data_set.auth = AuthMsg::Fail;
@@ -224,7 +222,7 @@ impl ManagerHandle {
             data_set.auth = AuthMsg::Done;
             afb_log_msg!(Notice, None, "Authentification Done"); 
         }
-        
+        self.event.push(data_set.auth);
         // data_set.auth = AuthMsg::Done;
         Ok(data_set.clone())
     }
