@@ -187,11 +187,13 @@ impl ManagerHandle {
                     afb_log_msg!(Notice,None,":::::::::::OCPP AUTH STATE: {} :::::::::::", ocpp_state);
                     if ocpp_state {
                         data_set.auth = AuthMsg::Done; 
-                        afb_log_msg!(Notice, None, "Authentification Done");
+                        afb_log_msg!(Notice, None, "Authentication Done");
                     }
                     else {
                         data_set.auth = AuthMsg::Fail;
-                        afb_log_msg!(Notice, None, "Authentification Fail");
+                        afb_log_msg!(Notice, None, "Authentication Fail");
+                        self.event.push(data_set.auth);
+                        return afb_error!("ocpp-login-fail", "::::::::NFC rejected by OCPP::::::::");
                     }
                 }
                 Err(_) => {
